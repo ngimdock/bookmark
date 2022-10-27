@@ -3,10 +3,16 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
 import * as argon2 from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async register(authDto: AuthDto) {
     try {
@@ -19,9 +25,9 @@ export class AuthService {
         },
       });
 
-      delete user.hash;
+      const accessToken = await this.generateToken(user.id, user.email);
 
-      return user;
+      return accessToken;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         throw new ForbiddenException(
@@ -35,20 +41,17 @@ export class AuthService {
 
   async login(authDto: AuthDto) {
     try {
-      // find user by email
       const user = await this.prismaService.user.findUnique({
         where: {
           email: authDto.email,
         },
       });
 
-      //if not exist throw and error
       if (!user)
         throw new ForbiddenException(
           'The user with the provided email does not exist',
         );
 
-      //compare password
       const isPasswordMatched = await argon2.verify(
         user.hash,
         authDto.password,
@@ -57,11 +60,27 @@ export class AuthService {
       if (!isPasswordMatched)
         throw new ForbiddenException('The given password is not correspond');
 
-      delete user.hash;
+      const accessToken = await this.generateToken(user.id, user.email);
 
-      return user;
+      return accessToken;
     } catch (error) {
       throw error;
     }
+  }
+
+  private async generateToken(userId: number, email: string) {
+    const payload = {
+      sub: userId,
+      email,
+    };
+
+    const secret = this.config.get('JWT_SECRET');
+
+    const token = await this.jwtService.signAsync(payload, {
+      secret,
+      expiresIn: '15m',
+    });
+
+    return { access_token: token };
   }
 }
