@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   UsePipes,
   ValidationPipe,
@@ -18,6 +20,7 @@ export class AuthControler {
     return this.authService.register(authDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('login')
   login(@Body() authDto: AuthDto) {
     return this.authService.login(authDto);
