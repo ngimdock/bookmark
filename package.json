@@ -13,7 +13,7 @@
     "db:test:up": "docker compose up test-db -d",
     "db:test:rm": "docker compose rm test-db -s -f -v",
     "db:test:start": "yarn db:test:rm && yarn db:test:up",
-    "db:test:display": "dotenv -e .env.test -- npx prisma migrate deploy && npx prisma studio",
+    "db:test:display": "npx dotenv -e .env.test -- prisma migrate deploy && npx dotenv -e .env.test -- prisma studio",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -27,7 +27,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "pretest:e2e": "yarn db:test:start",
-    "test:e2e": "dotenv -e .env.test -- jest --watch --no-catch --config ./test/jest-e2e.json"
+    "test:e2e": "dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

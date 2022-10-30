@@ -1,11 +1,11 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 
 describe('App e2e', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -14,15 +14,60 @@ describe('App e2e', () => {
 
     app = await moduleRef.createNestApplication();
 
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
     await app.init();
 
-    prisma = app.get(PrismaService);
+    prismaService = app.get(PrismaService);
 
-    await prisma.cleanDb();
+    await prismaService.cleanDb();
   });
 
-  afterAll(async () => {
+  afterAll(() => {
     app.close();
   });
-  it.todo('hello testing');
+
+  it.todo('hello');
+
+  describe('Auth', () => {
+    describe('Register', () => {
+      it.todo('sould register a new user');
+    });
+
+    describe('Login', () => {
+      it.todo('should login a user');
+    });
+  });
+
+  describe('User', () => {
+    describe('Get me', () => {
+      //
+    });
+
+    describe('update user', () => {
+      //
+    });
+  });
+
+  describe('Bookmarks', () => {
+    describe('Create bookmark', () => {
+      //
+    });
+
+    describe('Get bookmarks', () => {
+      //
+    });
+
+    describe('Get bookmark bu id', () => {
+      //
+    });
+
+    describe('Upfate bookmark', () => {
+      //
+    });
+
+    describe('Delete bookmark', () => {
+      //
+    });
+  });
 });
