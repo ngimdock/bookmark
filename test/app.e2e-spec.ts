@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from 'src/auth/dto';
+import { UpdateUserDto } from 'src/user/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -125,20 +126,32 @@ describe('App e2e', () => {
   });
 
   describe('User', () => {
-    const ROUTE_USER = '/users/me';
     describe('Get me', () => {
       it('sould get the current user', () => {
         return pactum
           .spec()
-          .get(ROUTE_USER)
+          .get('/users/me')
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-          .expectStatus(HttpStatus.OK)
-          .inspect();
+          .expectStatus(HttpStatus.OK);
       });
     });
 
     describe('update user', () => {
-      //
+      const dto: UpdateUserDto = {
+        firstname: 'danilix',
+        lastname: 'dan',
+      };
+
+      it('sould update the current user', () => {
+        return pactum
+          .spec()
+          .patch('/users/update')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(dto)
+          .expectStatus(HttpStatus.OK)
+          .expectBodyContains(dto.firstname)
+          .expectBodyContains(dto.lastname);
+      });
     });
   });
 
