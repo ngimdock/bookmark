@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guard';
+import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { BookmarkService } from './bookmark.service';
 import { CreateBookmarkDto, UpdateBookmarkDto } from './dto';
@@ -29,7 +29,7 @@ export class BookmarkController {
     @Param('id', ParseIntPipe) bookmarkId: number,
     @GetUser('id') userId: number,
   ) {
-    return this.bookmarkService.deleteBookmarkById(userId, bookmarkId);
+    return this.bookmarkService.getBookmarkById(userId, bookmarkId);
   }
 
   @Post('create')

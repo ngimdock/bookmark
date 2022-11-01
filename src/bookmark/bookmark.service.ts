@@ -21,13 +21,12 @@ export class BookmarkService {
   }
 
   async getBookmarkById(userId: number, bookmarkId: number) {
-    const bookmark = await this.prismaService.bookmark.findUnique({
+    const bookmark = await this.prismaService.bookmark.findFirst({
       where: {
+        userId,
         id: bookmarkId,
       },
     });
-
-    if (!bookmark) throw new NotFoundException();
 
     return bookmark;
   }

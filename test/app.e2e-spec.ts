@@ -165,7 +165,6 @@ describe('App e2e', () => {
           .get('/bookmarks')
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(HttpStatus.OK)
-          .inspect()
           .expectBody([]); //expect that the waiting result is and empty array
       });
     });
@@ -177,22 +176,38 @@ describe('App e2e', () => {
           description: 'one of the good anime',
           link: 'https://dragon-ballz.com',
         };
+
         return pactum
           .spec()
           .post('/bookmarks/create')
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .withBody(dto)
           .expectStatus(HttpStatus.CREATED)
-          .inspect();
+          .stores('bookmarkId', 'id');
       });
     });
 
     describe('sould get all bookmarks', () => {
-      //
+      it('Sould get bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(HttpStatus.OK);
+      });
     });
 
     describe('sould get bookmark by id', () => {
-      //
+      it('Sould get bookmark', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(HttpStatus.OK)
+          .expectBodyContains('$S{bookmarkId}')
+          .inspect();
+      });
     });
 
     describe('sould update bookmark by id', () => {
