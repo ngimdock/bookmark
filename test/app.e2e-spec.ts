@@ -3,8 +3,8 @@ import * as pactum from 'pactum';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
-import { AuthDto } from 'src/auth/dto';
-import { UpdateUserDto } from 'src/user/dto';
+import { AuthDto } from '../src/auth/dto';
+import { UpdateUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -160,19 +160,19 @@ describe('App e2e', () => {
       //
     });
 
-    describe('Get bookmarks', () => {
+    describe('sould get all bookmarks', () => {
       //
     });
 
-    describe('Get bookmark by id', () => {
+    describe('sould get bookmark by id', () => {
       //
     });
 
-    describe('Update bookmark by id', () => {
+    describe('sould update bookmark by id', () => {
       //
     });
 
-    describe('Delete bookmark by id', () => {
+    describe('sould delete bookmark by id', () => {
       //
     });
   });
