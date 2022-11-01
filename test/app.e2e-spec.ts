@@ -5,7 +5,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { UpdateUserDto } from '../src/user/dto';
-import { CreateBookmarkDto } from 'src/bookmark/dto';
+import { CreateBookmarkDto, UpdateBookmarkDto } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -211,11 +211,41 @@ describe('App e2e', () => {
     });
 
     describe('sould update bookmark by id', () => {
-      //
+      const dto: UpdateBookmarkDto = {
+        link: 'updated link',
+        description: 'updated description',
+      };
+      it('Sould update bookmark by id', () => {
+        return pactum
+          .spec()
+          .patch('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(dto)
+          .expectStatus(HttpStatus.OK)
+          .expectBodyContains(dto.link)
+          .expectBodyContains(dto.description);
+      });
     });
 
     describe('sould delete bookmark by id', () => {
-      //
+      it('Sould delete bookmark by id', () => {
+        return pactum
+          .spec()
+          .delete('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(HttpStatus.NO_CONTENT);
+      });
+
+      it('Sould get empty bookmark', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(HttpStatus.OK)
+          .expectJsonLength(0);
+      });
     });
   });
 });
