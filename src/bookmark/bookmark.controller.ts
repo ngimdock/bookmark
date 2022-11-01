@@ -7,18 +7,21 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { JwtGuard } from 'src/auth/guard';
+import { GetUser } from '../auth/decorator/get-user.decorator';
 import { BookmarkService } from './bookmark.service';
 import { CreateBookmarkDto, UpdateBookmarkDto } from './dto';
 
+@UseGuards(JwtGuard)
 @Controller('bookmarks')
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
   @Get()
   getBookmarks(@GetUser('id') userId: number) {
-    return this.bookmarkService.getBookmarks();
+    return this.bookmarkService.getBookmarks(userId);
   }
 
   @Get(':id')
@@ -26,7 +29,7 @@ export class BookmarkController {
     @Param('id', ParseIntPipe) bookmarkId: number,
     @GetUser('id') userId: number,
   ) {
-    //
+    return this.bookmarkService.deleteBookmarkById(userId, bookmarkId);
   }
 
   @Post('create')
@@ -34,9 +37,7 @@ export class BookmarkController {
     @Body() dto: CreateBookmarkDto,
     @GetUser('id') userId: number,
   ) {
-    console.log({ dto });
-
-    return this.bookmarkService.createBookmark(dto);
+    return this.bookmarkService.createBookmark(userId, { ...dto });
   }
 
   @Patch(':id')
@@ -45,7 +46,7 @@ export class BookmarkController {
     @Body() dto: UpdateBookmarkDto,
     @GetUser('id') userId: number,
   ) {
-    //
+    return this.bookmarkService.updateBookmarkById(userId, bookmarkId, dto);
   }
 
   @Delete(':id')
@@ -53,6 +54,6 @@ export class BookmarkController {
     @Param('id', ParseIntPipe) bookmarkId: number,
     @GetUser('id') userId: number,
   ) {
-    //
+    return this.bookmarkService.deleteBookmarkById(userId, bookmarkId);
   }
 }

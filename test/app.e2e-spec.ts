@@ -5,6 +5,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { UpdateUserDto } from '../src/user/dto';
+import { CreateBookmarkDto } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -77,7 +78,8 @@ describe('App e2e', () => {
           .spec()
           .post(ROUTE_REGISTER)
           .withBody(dto)
-          .expectStatus(HttpStatus.CREATED);
+          .expectStatus(HttpStatus.CREATED)
+          .stores('userAt', 'access_token');
       });
     });
 
@@ -156,8 +158,33 @@ describe('App e2e', () => {
   });
 
   describe('Bookmarks', () => {
+    describe('Get empty bookmarks', () => {
+      it('Sould get bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(HttpStatus.OK)
+          .inspect()
+          .expectBody([]); //expect that the waiting result is and empty array
+      });
+    });
+
     describe('Create bookmark', () => {
-      //
+      it('sould create a bookmark ', () => {
+        const dto: CreateBookmarkDto = {
+          title: 'dragon ball Z',
+          description: 'one of the good anime',
+          link: 'https://dragon-ballz.com',
+        };
+        return pactum
+          .spec()
+          .post('/bookmarks/create')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(dto)
+          .expectStatus(HttpStatus.CREATED)
+          .inspect();
+      });
     });
 
     describe('sould get all bookmarks', () => {
